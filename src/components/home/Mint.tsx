@@ -133,7 +133,6 @@ const Mint = () => {
 
       const hash = await walletClient.writeContract(request);
       console.log("Transaction hash:", hash);
-      setReceipt(res);
       updateNFTStatus({
         nftId: res.nftId,
         status: true,
@@ -163,6 +162,7 @@ const Mint = () => {
       state: false,
       message: "",
     });
+    setReceipt(res);
     reset();
   };
 
