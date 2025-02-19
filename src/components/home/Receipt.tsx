@@ -106,6 +106,10 @@ const Receipt = () => {
             className="w-full flex justify-center items-center gap-2 text-white px-5 2xs:px-6 sm:px-8 py-3 sm:py-4 rounded-lg xs:rounded-xl"
             onClick={() => {
               setReceipt(null);
+              const middleSection = document.getElementById("middle-section");
+              if (middleSection) {
+                middleSection.scrollIntoView({ behavior: "smooth" });
+              }
             }}
           >
             <BiSolidCube className="text-xl" />

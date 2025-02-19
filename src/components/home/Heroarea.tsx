@@ -37,7 +37,16 @@ const Heroarea = () => {
             <FaRocket className="text-base sm:text-lg" />
             <p className="text-sm sm:text-base font-bold">Get Started</p>
           </button>
-          <button className="flex items-center gap-2 bg-[#1F293780] text-white px-5 2xs:px-6 sm:px-8 py-3 sm:py-4 rounded-lg xs:rounded-xl border border-[#374151]">
+          <button
+            onClick={() => {
+              window.open(
+                "https://www.loom.com/share/98dc340dc8c74b3e8a6c368d722b9d71?sid=03bf544e-3a94-47bd-9d64-50e99f9c0e54",
+                "_blank",
+                "noreferrer"
+              );
+            }}
+            className="flex items-center gap-2 bg-[#1F293780] text-white px-5 2xs:px-6 sm:px-8 py-3 sm:py-4 rounded-lg xs:rounded-xl border border-[#374151]"
+          >
             <IoIosPlayCircle className="text-base sm:text-lg" />
             <p className="text-sm sm:text-base">Watch Video</p>
           </button>
