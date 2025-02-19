@@ -6,11 +6,25 @@ export default {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+
+  darkMode: ["class", '[data-mode="dark"]'],
+
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        primary: "",
+      },
+      screens: {
+        "3xs": "350px",
+        "2xs": "480px",
+        xs: "576px",
+        sm: "640px",
+        md: "768px",
+        lg: "1024px",
+        xl: "1200px",
+        "2xl": "1440px",
+        "3xl": "1600px",
+        "4xl": "1800px",
       },
     },
   },

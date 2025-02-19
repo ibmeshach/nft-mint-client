@@ -2,20 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer components {
+  .btn-connect {
+    @apply flex items-center gap-2 text-white px-6 xs:px-8 py-2.5 xs:py-3 rounded-full;
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+.container {
+  @apply mx-auto max-w-[90%] sm:max-w-[87%];
+}
+
+button {
+  @apply transition-transform duration-300 ease-in-out hover:scale-105;
+}
+
+* {
+  margin: 0;
+  padding: 0;
 }
