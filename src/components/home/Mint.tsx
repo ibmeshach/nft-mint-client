@@ -137,6 +137,7 @@ const Mint = () => {
         nftId: res.nftId,
         status: true,
       });
+      setReceipt(res);
     } catch (error) {
       console.error("Error minting NFT:", error);
       toast.error("Error minting NFT");
@@ -162,7 +163,6 @@ const Mint = () => {
       state: false,
       message: "",
     });
-    setReceipt(res);
     reset();
   };
 
