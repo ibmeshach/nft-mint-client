@@ -2,7 +2,7 @@
 import { nftMintContractAbi } from "@/constant/abi";
 import { yupResolver } from "@hookform/resolvers/yup";
 import classNames from "classnames";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { BiSolidCube } from "react-icons/bi";
 import * as yup from "yup";
@@ -17,9 +17,13 @@ import { mintNFTContractAddress } from "@/constant";
 import useReceiptStore from "@/store/receipt.store";
 import { custom, useAccount } from "wagmi";
 import { SectionWrapper } from "@/utils/hoc";
-import { createWalletClient } from "viem";
+import {
+  createWalletClient,
+  createPublicClient,
+  WalletClient,
+  PublicClient,
+} from "viem";
 import { sepolia } from "viem/chains";
-import { createPublicClient } from "viem";
 
 const schema = yup.object().shape({
   nftName: yup.string().required("NFT Name is required"),
@@ -35,6 +39,8 @@ type FormData = yup.InferType<typeof schema>;
 const Mint = () => {
   const { address, isConnected } = useAccount();
   const { setReceipt } = useReceiptStore();
+  const [walletClient, setWalletClient] = useState<WalletClient | null>(null);
+  const [publicClient, setPublicClient] = useState<PublicClient | null>(null);
   const [loading, setLoading] = useState<{
     state: boolean;
     message: string;
@@ -43,21 +49,41 @@ const Mint = () => {
     message: "",
   });
 
-  const walletClient = createWalletClient({
-    chain: sepolia,
-    transport: custom(window.ethereum!),
-  });
+  useEffect(() => {
+    const initializeClients = async () => {
+      if (typeof window !== "undefined" && window.ethereum) {
+        try {
+          const wallet = createWalletClient({
+            chain: sepolia,
+            transport: custom(window.ethereum),
+          });
 
-  const publicClient = createPublicClient({
-    chain: sepolia,
-    transport: custom(window.ethereum!),
-  });
+          const public_ = createPublicClient({
+            chain: sepolia,
+            transport: custom(window.ethereum),
+          });
+
+          setWalletClient(wallet);
+          setPublicClient(public_);
+        } catch (error) {
+          console.error("Failed to initialize clients:", error);
+          toast.error("Failed to initialize wallet connection");
+        }
+      }
+    };
+
+    initializeClients();
+  }, []);
 
   const generateRandomId = () => {
     return Math.floor(Date.now() % 10000) + Math.floor(Math.random() * 1000);
   };
 
   const findAvailableId = async (): Promise<number> => {
+    if (!publicClient) {
+      throw new Error("Wallet connection not initialized");
+    }
+
     const randomId = generateRandomId();
 
     try {
@@ -102,10 +128,18 @@ const Mint = () => {
   };
 
   const onSuccess = async (data: AxiosResponse<RStoreNFTData>) => {
+    if (!publicClient || !walletClient) {
+      toast.error("Wallet connection not initialized");
+      setLoading({
+        state: false,
+        message: "",
+      });
+      return;
+    }
+
     const res = data.data.data;
     const api = process.env.NEXT_PUBLIC_BACKEND_API;
 
-    // Validate that we have an ID before proceeding
     if (!res?.nftId) {
       toast.error("Invalid NFT ID received");
       setLoading({
@@ -130,6 +164,10 @@ const Mint = () => {
         args: [res.nftId, metadataUrl],
         account: address,
       });
+
+      if (!request) {
+        throw new Error("Failed to generate contract request");
+      }
 
       const hash = await walletClient.writeContract(request);
       console.log("Transaction hash:", hash);
@@ -173,11 +211,17 @@ const Mint = () => {
   );
 
   const onSubmit = async (data: FormData) => {
+    if (!publicClient || !walletClient) {
+      toast.error("Please connect your wallet first");
+      return;
+    }
+
     try {
       setLoading({
         state: true,
         message: "Finding available NFT ID...",
       });
+
       const id = await findAvailableId();
 
       if (!id) {
@@ -186,7 +230,7 @@ const Mint = () => {
       }
 
       if (!address) {
-        toast.error("Error getting wallet address");
+        toast.error("Please connect your wallet");
         return;
       }
 

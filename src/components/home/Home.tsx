@@ -3,12 +3,7 @@ import useReceiptStore from "@/store/receipt.store";
 import Heroarea from "./Heroarea";
 import Receipt from "./Receipt";
 import Gallery from "./Gallery";
-import dynamic from "next/dynamic";
-
-const Mint = dynamic(() => import("./Mint"), {
-  ssr: false,
-  loading: () => <p>Loading...</p>,
-});
+import Mint from "./Mint";
 
 const Home = () => {
   const { receipt } = useReceiptStore();
